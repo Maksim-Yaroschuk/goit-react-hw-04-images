@@ -9,13 +9,24 @@ export const ImageGallery = ({ photos, getLargeImg }) => {
         return (
           <ImageGalleryItem
             getLargeImg={getLargeImg}
-              id={id}
-              key={webformatURL}
-              webformatURL={webformatURL}
-              largeImageURL={largeImageURL}
-            />
+            id={id}
+            key={webformatURL}
+            webformatURL={webformatURL}
+            largeImageURL={largeImageURL}
+          />
         );
       })}
-      </ul>
+    </ul>
   );
+};
+
+ImageGallery.propType = {
+  photos: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      webformatURL: PropTypes.string.isRequired,
+      largeImageURL: PropTypes.string.isRequired,
+    }).isRequired
+  ).isRequired,
+  getLargeImg: PropTypes.func.isRequired,
 };

@@ -27,9 +27,9 @@ export class Modal extends Component {
       this.props.onClose();
     }
   };
-    render() {
-      const {largeImageURL} = this.props
-    return(
+  render() {
+    const { largeImageURL } = this.props;
+    return (
       <div className={css.overlay} onClick={this.onBackdropClick}>
         <div className={css.modal}>
           <img src={largeImageURL} alt="" />

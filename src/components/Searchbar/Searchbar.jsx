@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import css from './Searchbar.module.css';
 import { ImSearch } from 'react-icons/im';
 
-export const SearchField = ({ find }) => {
+export const SearchField = ({ search }) => {
   return (
     <header className={css.searchbar}>
-      <form className={css.searchForm} onSubmit={find}>
+      <form className={css.searchForm} onSubmit={search}>
         <button type="submit" className={css.searchFormButton}>
           <ImSearch style={{ width: 22, height: 22 }} />
           <span className={css.searchFormButtonLabel}>Search</span>
@@ -20,4 +20,8 @@ export const SearchField = ({ find }) => {
       </form>
     </header>
   );
+};
+
+SearchField.propType = {
+  search: PropTypes.func.isRequired,
 };
