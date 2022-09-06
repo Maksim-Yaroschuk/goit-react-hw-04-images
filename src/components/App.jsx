@@ -5,6 +5,7 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { GlobalStyle } from 'GlobalStyle';
 import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
+import { Modal } from './Modal/Modal';
 
 export class App extends Component {
   state = {
@@ -12,8 +13,11 @@ export class App extends Component {
     request: '',
     page: 1,
     per_page: 12,
-    totalPages: 1,
+    // totalPages: 1,
+    largeImageURL: '',
     contentLoad: false,
+    showModal: false,
+    showLoadMoreBtn: false,
   };
 
   componentDidMount() {
@@ -31,9 +35,13 @@ export class App extends Component {
 
   getData = (request, page, per_page) => {
     getPhoto(request, page, per_page).then(r => {
+      const totalPages = r.data.totalHits / this.state.per_page;
+      if (totalPages > this.state.page) {
+        this.setState({ showLoadMoreBtn: true });
+      }
       this.setState(prevState => ({
         photos: [...prevState.photos, ...r.data.hits],
-        totalPages: r.data.totalHits / this.state.per_page,
+        // totalPages: r.data.totalHits / this.state.per_page,
         contentLoad: true,
       }));
     });
@@ -51,14 +59,31 @@ export class App extends Component {
     }));
   };
 
+  getLargeImg = largeImageURL => {
+    this.setState({ showModal: true, largeImageURL: largeImageURL });
+  };
+
+  onCloseModal = () => {
+    this.setState({ showModal: false });
+  };
+
   render() {
     return (
       <div className="app">
         <SearchField find={this.findResponse} />
         {!this.state.contentLoad && <Loader />}
-        <ImageGallery photos={this.state.photos} />
+        <ImageGallery
+          photos={this.state.photos}
+          getLargeImg={this.getLargeImg}
+        />
         {this.state.totalPages > this.state.page && (
           <Button text="Load more" loadMore={this.loadMore} />
+        )}
+        {this.state.showModal === true && (
+          <Modal
+            largeImageURL={this.state.largeImageURL}
+            onClose={this.onCloseModal}
+          />
         )}
 
         <GlobalStyle />
