@@ -7,16 +7,10 @@ axios.defaults.baseURL = BASE_URL;
 
 export const getPhoto = async (request, page, per_page) => {
   try {
-    if (!request) {
-      const r = await axios.get(
-        `?q=&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=${per_page}`
-      );
-      return r;
-    }
     const r = await axios.get(
       `?q=${request}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=${per_page}`
     );
-    return r;
+    return r.data;
   } catch (error) {
     console.log(error);
   }

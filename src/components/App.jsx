@@ -6,6 +6,7 @@ import { GlobalStyle } from 'GlobalStyle';
 import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
 import { Modal } from './Modal/Modal';
+import { Message } from './Message/Message';
 
 export class App extends Component {
   state = {
@@ -17,9 +18,13 @@ export class App extends Component {
     largeImageURL: '',
     contentLoad: false,
     showModal: false,
+    message: '',
   };
 
   componentDidMount() {
+    this.setState({
+      message: 'To display pictures, enter a query in the search field',
+    });
     this.getData();
   }
 
@@ -28,15 +33,31 @@ export class App extends Component {
       prevState.request !== this.state.request ||
       prevState.page !== this.state.page
     ) {
+      this.setState({ message: '' });
       this.getData(this.state.request, this.state.page, this.state.per_page);
     }
   }
 
   getData = (request, page, per_page) => {
+    this.setState({ contentLoad: false });
+    if (!request) {
+      this.setState({ contentLoad: true });
+      return;
+    }
     getPhoto(request, page, per_page).then(r => {
+      if (r.hits.length === 0) {
+        this.setState({
+          message: 'Sorry, nothing was found, please try your search again',
+        });
+      }
+      const photos = r.hits.map(({ id, webformatURL, largeImageURL }) => ({
+        id,
+        webformatURL,
+        largeImageURL,
+      }));
       this.setState(prevState => ({
-        photos: [...prevState.photos, ...r.data.hits],
-        totalPages: r.data.totalHits / this.state.per_page,
+        photos: [...prevState.photos, ...photos],
+        totalPages: r.totalHits / this.state.per_page,
         contentLoad: true,
       }));
     });
@@ -44,6 +65,11 @@ export class App extends Component {
 
   searchResponse = e => {
     e.preventDefault();
+    if (!e.target.findForm.value) {
+      this.setState({
+        message: 'Please fill in the search field',
+      });
+    }
     this.setState({ request: e.target.findForm.value, page: 1, photos: [] });
     e.target.reset();
   };
@@ -63,22 +89,26 @@ export class App extends Component {
   };
 
   render() {
+    const {
+      photos,
+      page,
+      totalPages,
+      largeImageURL,
+      contentLoad,
+      showModal,
+      message,
+    } = this.state;
     return (
       <div className="app">
         <SearchField search={this.searchResponse} />
-        {!this.state.contentLoad && <Loader />}
-        <ImageGallery
-          photos={this.state.photos}
-          getLargeImg={this.getLargeImg}
-        />
-        {this.state.totalPages > this.state.page && (
+        {!contentLoad && <Loader />}
+        {message && <Message message={message} />}
+        <ImageGallery photos={photos} getLargeImg={this.getLargeImg} />
+        {totalPages > page && (
           <Button text="Load more" loadMore={this.loadMore} />
         )}
-        {this.state.showModal === true && (
-          <Modal
-            largeImageURL={this.state.largeImageURL}
-            onClose={this.onCloseModal}
-          />
+        {showModal && (
+          <Modal largeImageURL={largeImageURL} onClose={this.onCloseModal} />
         )}
 
         <GlobalStyle />
