@@ -101,9 +101,9 @@ export class App extends Component {
     return (
       <div className="app">
         <SearchField search={this.searchResponse} />
-        {!contentLoad && <Loader />}
         {message && <Message message={message} />}
         <ImageGallery photos={photos} getLargeImg={this.getLargeImg} />
+        {!contentLoad && <Loader />}
         {totalPages > page && (
           <Button text="Load more" loadMore={this.loadMore} />
         )}
