@@ -21,12 +21,36 @@ export const App = () => {
   const [contentLoad, setContentLoad] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    getData(request, page, per_page);
-  }, [request, page]);
-
   const getData = (request, page, per_page) => {
     setContentLoad(false);
+    if (!request) {
+      setContentLoad(true);
+      return;
+    }
+    // getPhoto(request, page, per_page).then(r => {
+    //   if (r.hits.length === 0) {
+    //     setMessage('Sorry, nothing was found, please try your search again');
+    //     setContentLoad(true);
+    //     return;
+    //   }
+    //   console.log(r)
+    //   const photosContent = r.hits.map(
+    //     ({ id, webformatURL, largeImageURL }) => ({
+    //       id,
+    //       webformatURL,
+    //       largeImageURL,
+    //     })
+    //   );
+    //   setMessage('');
+    //   setPhotos([...photos, ...photosContent]);
+    //   setTotalPages(r.totalHits / per_page);
+    //   setContentLoad(true);
+    // });
+  };
+
+  useEffect(() => {
+    // getData(request, page, per_page);
+
     if (!request) {
       setContentLoad(true);
       return;
@@ -37,7 +61,7 @@ export const App = () => {
         setContentLoad(true);
         return;
       }
-
+      console.log(r);
       const photosContent = r.hits.map(
         ({ id, webformatURL, largeImageURL }) => ({
           id,
@@ -50,7 +74,7 @@ export const App = () => {
       setTotalPages(r.totalHits / per_page);
       setContentLoad(true);
     });
-  };
+  }, [page, request]);
 
   const searchResponse = e => {
     e.preventDefault();
